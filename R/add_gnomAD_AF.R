@@ -21,11 +21,11 @@ add_gnomAD_AF <- function(data,
     max_af_cutoff = .001,
     populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
     ...){
-  genome_assembly <- match.arg(genome_assembly)
   if("gene_assembly" %in% names(list(...))){
     warning("'gene_assembly' is deprecated. Please use 'genome_assembly' instead.")
     genome_assembly <- list(...)[['gene_assembly']]
   }
+  genome_assembly <- match.arg(genome_assembly)
   if(genome_assembly %in% c('hg19', 'hs37d5')){
     if(!requireNamespace("MafDb.gnomAD.r2.1.hs37d5")){
       stop("Could not load gnomAD MafDb. Please install it.")
@@ -54,17 +54,12 @@ add_gnomAD_AF <- function(data,
   colnames(pt) <- populations
   res <- cbind(data, pt) %>% as.data.table()
   
-  # Compute the MAX_AF (why do we change col names?)
-  if(any(c("AF", "AF_popmax") %in% colnames(res))){
-    res$MAX_AF <- apply(res[, ..populations], 1, max, na.rm = T)
-    }
-    
-    # Replace Inf with NA
-    res[is.infinite(MAX_AF), MAX_AF := NA]
-    res[, rare := (MAX_AF <= max_af_cutoff | is.na(MAX_AF))]
-  } else {
-    warning("Could not find AF_popmax or AF column. Data is not filtered.")
-  }
+  # Compute the MAX_AF based on all provided population columns
+  res$MAX_AF <- apply(res[, ..populations], 1, max, na.rm = T)
+  
+  # Replace Inf with NA
+  res[is.infinite(MAX_AF), MAX_AF := NA]
+  res[, rare := (MAX_AF <= max_af_cutoff | is.na(MAX_AF))]
   
   return(res)
 }

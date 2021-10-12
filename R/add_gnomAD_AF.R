@@ -25,20 +25,20 @@ add_gnomAD_AF <- function(data,
     warning("'gene_assembly' is deprecated. Please use 'genome_assembly' instead.")
     genome_assembly <- list(...)[['gene_assembly']]
   }
+  
   genome_assembly <- match.arg(genome_assembly)
-  if(genome_assembly %in% c('hg19', 'hs37d5')){
-    if(!requireNamespace("MafDb.gnomAD.r2.1.hs37d5")){
-      stop("Could not load gnomAD MafDb. Please install it.")
-    }
-    mafdb <- MafDb.gnomAD.r2.1.hs37d5::MafDb.gnomAD.r2.1.hs37d5
-  } else if(genome_assembly %in% c('hg38', 'GRCh38')){
-    if(!requireNamespace("MafDb.gnomAD.r2.1.GRCh38")){
-      stop("Could not load gnomAD MafDb. Please install it.")
-    }
-    mafdb <- MafDb.gnomAD.r2.1.GRCh38::MafDb.gnomAD.r2.1.GRCh38
-  } else {
+  mafdb_name <- switch(genome_assembly, 
+    hg19   = "MafDb.gnomAD.r2.1.hs37d5",
+    hs37d5 = "MafDb.gnomAD.r2.1.hs37d5",
+    hg38   = "MafDb.gnomAD.r2.1.GRCh38",
+    GRCh38 = "MafDb.gnomAD.r2.1.GRCh38",
     stop("Please provide a supported genome assembly version.")
+  )
+  
+  if(!requireNamespace(mafdb_name)){
+    stop("Could not load provided gnomAD MafDb:", mafdb_name, ". Please install it.")
   }
+  mafdb <- getFromNamespace(mafdb_name, mafdb_name)
   
   if(!all(populations %in% populations(mafdb))){
     stop("Please provide only populations provided by gnomAD!")

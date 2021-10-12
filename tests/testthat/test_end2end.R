@@ -4,8 +4,8 @@ test_that("End to end", {
     
     maeCounts <- fread(file)
     expect_warning({ maeRes <- DESeq4MAE(maeCounts) }, "NaNs produced")
-    
-    if(!requireNamespace("MafDb.gnomAD.r2.1.GRCh38", quietly=TRUE)){
+    pkg_name <- "MafDb.gnomAD.r2.1.GRCh38"
+    if(!requireNamespace(pkg_name, quietly=TRUE)){
         expect_error(
                 add_gnomAD_AF(data=maeRes, genome_assembly='hg38', pop="AF"), 
                 "Could not load gnomAD MafDb")
@@ -17,10 +17,11 @@ test_that("End to end", {
         res <- add_gnomAD_AF(data=maeRes, genome_assembly='GRCh38', pop="AF")
     }
     
-    if(!requireNamespace("MafDb.gnomAD.r2.1.hs37d5", quietly=TRUE)){
+    pkg_name <- "MafDb.gnomAD.r2.1.hs37d5"
+    if(!requireNamespace(pkg_name, quietly=TRUE)){
         if (!requireNamespace("BiocManager", quietly=TRUE))
             install.packages("BiocManager")
-        BiocManager::install("MafDb.gnomAD.r2.1.hs37d5")
+        BiocManager::install(pkg_name)
     }
     
     res <- add_gnomAD_AF(data=maeRes, genome_assembly='hg19', pop="AF")

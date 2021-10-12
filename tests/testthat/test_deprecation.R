@@ -3,8 +3,8 @@ test_that("End to end", {
                         package="tMAE", mustWork=TRUE)
     
     maeCounts <- fread(file)
-    maeRes <- DESeq4MAE(maeCounts)
     
+    expect_warning({ maeRes <- DESeq4MAE(maeCounts) }, "NaNs produced")
     expect_warning(add_gnomAD_AF(data=maeRes, gene_assembly='hg19', pop="AF"),
-            "'gene_assembly' is depricated.")
+            "'gene_assembly' is deprecated")
 })

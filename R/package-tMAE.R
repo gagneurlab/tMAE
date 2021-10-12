@@ -27,3 +27,19 @@
 #' 
 NULL
 
+globalVariables(c(
+        ".",
+        "..populations",
+        "altCount",
+        "altRatio",
+        "FC",
+        "hgncid",
+        "MAX_AF",
+        "padj",
+        "rare",
+        "refCount",
+    	"Significant",
+        "totalCount"),
+    package="tMAE")
+
+

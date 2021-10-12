@@ -1,4 +1,5 @@
-^.*\.Rproj$
-^\.Rproj\.user$
-^MAXt\.Rproj$
-^\.travis\.yml$
+.*\.Rproj
+\.github
+\.gitignore
+\.RData
+\.Rbuildignore

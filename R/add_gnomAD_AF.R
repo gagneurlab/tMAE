@@ -63,13 +63,13 @@ add_gnomAD_AF <- function(data,
 
 .get_mafdb <- function(pkg_name){
   if(!requireNamespace(pkg_name, quietly=TRUE)){
-    warning("Could not load provided gnomAD MafDb:", mafdb_name, ". We will install it now!")
+    warning("Could not load provided gnomAD MafDb:", pkg_name, ". We will install it now!")
     if (!requireNamespace("BiocManager", quietly=TRUE))
       install.packages("BiocManager")
     BiocManager::install(pkg_name)
   }
   
-  mafdb <- getFromNamespace(mafdb_name, mafdb_name)
+  mafdb <- getFromNamespace(pkg_name, pkg_name)
   mafdb
 }
 

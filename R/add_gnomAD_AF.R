@@ -55,10 +55,12 @@ add_gnomAD_AF <- function(data,
   res <- cbind(data, pt) %>% as.data.table()
   
   # Compute the MAX_AF based on all provided population columns
-  res$MAX_AF <- apply(res[, ..populations], 1, max, na.rm = T)
+  # return -1 if only NAs are present (to avoid a warning)
+  res$MAX_AF <- apply(res[, ..populations], 1, 
+      FUN=function(x){ pmax(x, -1, na.rm=TRUE) })
   
-  # Replace Inf with NA
-  res[is.infinite(MAX_AF), MAX_AF := NA]
+  # Replace Inf/-1 with NA
+  res[is.infinite(MAX_AF) | MAX_AF == -1, MAX_AF := NA]
   res[, rare := (MAX_AF <= max_af_cutoff | is.na(MAX_AF))]
   
   return(res)

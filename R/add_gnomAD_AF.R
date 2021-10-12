@@ -27,18 +27,13 @@ add_gnomAD_AF <- function(data,
   }
   
   genome_assembly <- match.arg(genome_assembly)
-  mafdb_name <- switch(genome_assembly, 
+  mafdb <- .get_mafdb(switch(genome_assembly, 
     hg19   = "MafDb.gnomAD.r2.1.hs37d5",
     hs37d5 = "MafDb.gnomAD.r2.1.hs37d5",
     hg38   = "MafDb.gnomAD.r2.1.GRCh38",
     GRCh38 = "MafDb.gnomAD.r2.1.GRCh38",
     stop("Please provide a supported genome assembly version.")
-  )
-  
-  if(!requireNamespace(mafdb_name)){
-    stop("Could not load provided gnomAD MafDb:", mafdb_name, ". Please install it.")
-  }
-  mafdb <- getFromNamespace(mafdb_name, mafdb_name)
+  ))
   
   if(!all(populations %in% populations(mafdb))){
     stop("Please provide only populations provided by gnomAD!")
@@ -64,5 +59,17 @@ add_gnomAD_AF <- function(data,
   res[, rare := (MAX_AF <= max_af_cutoff | is.na(MAX_AF))]
   
   return(res)
+}
+
+.get_mafdb <- function(pkg_name){
+  if(!requireNamespace(pkg_name, quietly=TRUE)){
+    warning("Could not load provided gnomAD MafDb:", mafdb_name, ". We will install it now!")
+    if (!requireNamespace("BiocManager", quietly=TRUE))
+      install.packages("BiocManager")
+    BiocManager::install(pkg_name)
+  }
+  
+  mafdb <- getFromNamespace(mafdb_name, mafdb_name)
+  mafdb
 }
 

@@ -4,26 +4,15 @@ test_that("End to end", {
     
     maeCounts <- fread(file)
     expect_warning({ maeRes <- DESeq4MAE(maeCounts) }, "NaNs produced")
+    
+    # only run hg38 if existing we do not want to force a download
     pkg_name <- "MafDb.gnomAD.r2.1.GRCh38"
-    if(!requireNamespace(pkg_name, quietly=TRUE)){
-        expect_error(
-                add_gnomAD_AF(data=maeRes, genome_assembly='hg38', pop="AF"), 
-                "Could not load gnomAD MafDb")
-        expect_error(
-                add_gnomAD_AF(data=maeRes, genome_assembly='GRCh38', pop="AF"),
-                "Could not load gnomAD MafDb")
-    } else {
+    if(requireNamespace(pkg_name, quietly=TRUE)){
         res <- add_gnomAD_AF(data=maeRes, genome_assembly='hg38', pop="AF")
         res <- add_gnomAD_AF(data=maeRes, genome_assembly='GRCh38', pop="AF")
     }
     
-    pkg_name <- "MafDb.gnomAD.r2.1.hs37d5"
-    if(!requireNamespace(pkg_name, quietly=TRUE)){
-        if (!requireNamespace("BiocManager", quietly=TRUE))
-            install.packages("BiocManager")
-        BiocManager::install(pkg_name)
-    }
-    
+    # expect hg19 to work or to download it on the fly
     res <- add_gnomAD_AF(data=maeRes, genome_assembly='hg19', pop="AF")
     res <- add_gnomAD_AF(data=maeRes, genome_assembly='hs37d5', pop="AF")
 

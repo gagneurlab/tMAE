@@ -1,5 +1,6 @@
-.*\.Rproj
 \.github
 \.gitignore
 \.RData
 \.Rbuildignore
+^.*\.Rproj$
+^\.Rproj\.user$

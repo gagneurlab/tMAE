@@ -4,6 +4,8 @@
 #' @author Vicente Yepez
 #' @param data A data.frame containing allelic counts.
 #' @param genome_assembly either 'hg19/hs37d5' or 'hg38/GRCh38' indicating the genome assembly of the variants.
+#'                It can also be any full string of a MafDb provided by 
+#'                \code{\link[GenomicScores]{availableGScores}}.
 #' @param max_af_cutoff cutoff for a variant to be considered rare. Default is .001.
 #' @param populations The population to be annotated.
 #' @param ... Used for backwards compatibility (gene_assembly -> genome_assembly)
@@ -17,7 +19,7 @@
 #' maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = 'hg19', pop="AF")
 #' 
 add_gnomAD_AF <- function(data, 
-    genome_assembly = c('hg19', 'hs37d5', 'hg38', 'GRCh38'), 
+    genome_assembly = c('hg19', 'hs37d5', 'hg38', 'GRCh38'),
     max_af_cutoff = .001,
     populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
     ...){
@@ -26,15 +28,19 @@ add_gnomAD_AF <- function(data,
     genome_assembly <- list(...)[['gene_assembly']]
   }
   
-  genome_assembly <- match.arg(genome_assembly)
-  mafdb <- .get_mafdb(switch(genome_assembly, 
-    hg19   = "MafDb.gnomAD.r2.1.hs37d5",
-    hs37d5 = "MafDb.gnomAD.r2.1.hs37d5",
-    hg38   = "MafDb.gnomAD.r2.1.GRCh38",
-    GRCh38 = "MafDb.gnomAD.r2.1.GRCh38",
-    stop("Please provide a supported genome assembly version.")
-  ))
-  
+  if(genome_assembly %in% grep("MafDb", value=TRUE, rownames(availableGScores()))){
+    mafdb <- .get_mafdb(genome_assembly)
+  } else {
+    genome_assembly <- match.arg(genome_assembly)
+    mafdb <- .get_mafdb(switch(genome_assembly, 
+      hg19   = "MafDb.gnomAD.r2.1.hs37d5",
+      hs37d5 = "MafDb.gnomAD.r2.1.hs37d5",
+      hg38   = "MafDb.gnomAD.r2.1.GRCh38",
+      GRCh38 = "MafDb.gnomAD.r2.1.GRCh38",
+      stop("Please provide a supported genome assembly version.")
+    ))
+  }
+    
   if(!all(populations %in% populations(mafdb))){
     stop("Please provide only populations provided by gnomAD!")
   }
@@ -63,10 +69,10 @@ add_gnomAD_AF <- function(data,
 
 .get_mafdb <- function(pkg_name){
   if(!requireNamespace(pkg_name, quietly=TRUE)){
-    warning("Could not load provided gnomAD MafDb:", pkg_name, ". We will install it now!")
+    warning("The given MafDb is not installed:", pkg_name, ". We will do it now!")
     if (!requireNamespace("BiocManager", quietly=TRUE))
       install.packages("BiocManager")
-    BiocManager::install(pkg_name)
+    BiocManager::install(pkg_name, update=FALSE)
   }
   
   mafdb <- getFromNamespace(pkg_name, pkg_name)

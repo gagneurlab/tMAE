@@ -15,7 +15,9 @@ add_gnomAD_AF(
 \arguments{
 \item{data}{A data.frame containing allelic counts.}
 
-\item{genome_assembly}{either 'hg19/hs37d5' or 'hg38/GRCh38' indicating the genome assembly of the variants.}
+\item{genome_assembly}{either 'hg19/hs37d5' or 'hg38/GRCh38' indicating the genome assembly of the variants.
+It can also be any full string of a MafDb provided by 
+\code{\link[GenomicScores]{availableGScores}}.}
 
 \item{max_af_cutoff}{cutoff for a variant to be considered rare. Default is .001.}
 

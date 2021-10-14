@@ -35,7 +35,14 @@ Add allele frequency information from gnomAD.
 file <- system.file("extdata", "allelic_counts_HG00187.csv", package = "tMAE", mustWork = TRUE)
 maeCounts <- fread(file)
 maeRes <- DESeq4MAE(maeCounts)
+
+# to use the MafDb.gnomAD.r2.1.hs37d5 database
+\dontrun{
 maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = 'hg19', pop="AF")
+}
+
+# to use a provided database by name. here the ExAC database
+maeResEx <- add_gnomAD_AF(maeCounts, genome_assembly = 'MafDb.ExAC.r1.0.hs37d5', pop="AF")
 
 }
 \author{

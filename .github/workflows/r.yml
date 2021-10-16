@@ -44,7 +44,10 @@ jobs:
         with:
           extra-packages: |
             rcmdcheck
-            MafDb.ExAC.r1.0.hs37d5
+            
+      - name: Install MafDb for testing
+        run: BiocManager::install("MafDb.ExAC.r1.0.hs37d5", ask=FALSE)
+        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@master
 

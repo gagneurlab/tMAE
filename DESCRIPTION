@@ -29,8 +29,7 @@ Imports:
   BiocGenerics,
   GenomicScores,
   S4Vectors,
-  IRanges,
-  pak
+  IRanges
 Depends: 
   R (>= 3.6), 
   data.table

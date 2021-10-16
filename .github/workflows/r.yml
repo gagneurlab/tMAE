@@ -44,21 +44,8 @@ jobs:
         with:
           extra-packages: |
             rcmdcheck
+            MafDb.ExAC.r1.0.hs37d5
             
-      - name: Install MafDb for testing
-        run: |
-          print(.libPaths())
-          BiocManager::install("MafDb.ExAC.r1.0.hs37d5", update=FALSE, ask=FALSE)
-        shell: Rscript {0}
-      
-      - name: rmdcheck manually
-        run: |
-          options(crayon.enabled = TRUE)
-          BiocManager::install("MafDb.ExAC.r1.0.hs37d5", update=FALSE, ask=FALSE)
-          print(.libPaths())
-          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir="check")
-        shell: Rscript {0}
-
       - uses: r-lib/actions/check-r-package@master
 
       - name: Show testthat output

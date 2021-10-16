@@ -37,11 +37,10 @@ maeCounts <- fread(file)
 maeRes <- DESeq4MAE(maeCounts)
 
 # define the assembly/MafDb you want e.g. hg19, MafDb.gnomAD.r2.1.hs37d5, or MafDb.ExAC.r1.0.hs37d5
+\dontrun{
 genome_assembly <- 'hg19' 
-\dontshow{
-  genome_assembly <- 'MafDb.ExAC.r1.0.hs37d5'
-}
 maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = genome_assembly, pop="AF")
+}
 
 }
 \author{

@@ -18,11 +18,10 @@
 #' maeRes <- DESeq4MAE(maeCounts)
 #' 
 #' # define the assembly/MafDb you want e.g. hg19, MafDb.gnomAD.r2.1.hs37d5, or MafDb.ExAC.r1.0.hs37d5
+#' \dontrun{
 #' genome_assembly <- 'hg19' 
-#' \dontshow{
-#'   genome_assembly <- 'MafDb.ExAC.r1.0.hs37d5'
-#' }
 #' maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = genome_assembly, pop="AF")
+#' }
 #' 
 add_gnomAD_AF <- function(data, 
     genome_assembly = c('hg19', 'hs37d5', 'hg38', 'GRCh38'),
@@ -34,7 +33,7 @@ add_gnomAD_AF <- function(data,
     genome_assembly <- list(...)[['gene_assembly']]
   }
   
-  if(genome_assembly %in% grep("MafDb", value=TRUE, rownames(availableGScores()))){
+  if(genome_assembly %in% BiocManager::available("MafDb")){
     mafdb <- .get_mafdb(genome_assembly)
   } else {
     genome_assembly <- match.arg(genome_assembly)
@@ -43,7 +42,7 @@ add_gnomAD_AF <- function(data,
       hs37d5 = "MafDb.gnomAD.r2.1.hs37d5",
       hg38   = "MafDb.gnomAD.r2.1.GRCh38",
       GRCh38 = "MafDb.gnomAD.r2.1.GRCh38",
-      stop("Please provide a supported genome assembly version.")
+      stop("Please provide a supported genome assembly version. Not: ", genome_assembly)
     ))
   }
     

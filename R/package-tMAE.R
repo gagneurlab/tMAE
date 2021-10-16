@@ -22,7 +22,7 @@
 #'          dispersions dispersions<- nbinomWaldTest results
 #' @importFrom GenomicRanges GRanges
 #' @importFrom S4Vectors DataFrame
-#' @importFrom GenomicScores populations seqnames availableGScores
+#' @importFrom GenomicScores populations seqnames
 #' @importFrom BiocGenerics score start pos
 #' @importFrom IRanges IRanges
 #' 

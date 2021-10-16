@@ -6,10 +6,11 @@
 #' @name tMAE
 #'
 #' @import data.table
-# #' @import tidyr
+#' 
 #' @importFrom dplyr left_join
 #' @importFrom magrittr %>%
 #' @importFrom ggplot2 ggplot geom_point theme_bw scale_y_log10 scale_x_log10 labs scale_color_manual theme aes element_blank geom_abline
+#' @importFrom utils getFromNamespace install.packages
 #' 
 #' @importFrom BiocGenerics estimateSizeFactors plotDispEsts
 #' 
@@ -26,4 +27,20 @@
 #' @importFrom IRanges IRanges
 #' 
 NULL
+
+globalVariables(c(
+        ".",
+        "..populations",
+        "altCount",
+        "altRatio",
+        "FC",
+        "hgncid",
+        "MAX_AF",
+        "padj",
+        "rare",
+        "refCount",
+    	"Significant",
+        "totalCount"),
+    package="tMAE")
+
 

@@ -15,7 +15,9 @@ add_gnomAD_AF(
 \arguments{
 \item{data}{A data.frame containing allelic counts.}
 
-\item{genome_assembly}{either 'hg19/hs37d5' or 'hg38/GRCh38' indicating the genome assembly of the variants.}
+\item{genome_assembly}{either 'hg19/hs37d5' or 'hg38/GRCh38' indicating the genome assembly of the variants.
+It can also be any full string of a MafDb provided by 
+\code{\link[GenomicScores]{availableGScores}}.}
 
 \item{max_af_cutoff}{cutoff for a variant to be considered rare. Default is .001.}
 
@@ -33,7 +35,12 @@ Add allele frequency information from gnomAD.
 file <- system.file("extdata", "allelic_counts_HG00187.csv", package = "tMAE", mustWork = TRUE)
 maeCounts <- fread(file)
 maeRes <- DESeq4MAE(maeCounts)
-maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = 'hg19', pop="AF")
+
+# define the assembly/MafDb you want e.g. hg19, MafDb.gnomAD.r2.1.hs37d5, or MafDb.ExAC.r1.0.hs37d5
+\dontrun{
+genome_assembly <- 'hg19' 
+maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = genome_assembly, pop="AF")
+}
 
 }
 \author{

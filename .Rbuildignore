@@ -1,4 +1,6 @@
+\.github
+\.gitignore
+\.RData
+\.Rbuildignore
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^MAXt\.Rproj$
-^\.travis\.yml$

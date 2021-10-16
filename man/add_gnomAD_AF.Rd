@@ -36,13 +36,12 @@ file <- system.file("extdata", "allelic_counts_HG00187.csv", package = "tMAE", m
 maeCounts <- fread(file)
 maeRes <- DESeq4MAE(maeCounts)
 
-# to use the MafDb.gnomAD.r2.1.hs37d5 database
-\dontrun{
-maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = 'hg19', pop="AF")
+# define the assembly/MafDb you want e.g. hg19, MafDb.gnomAD.r2.1.hs37d5, or MafDb.ExAC.r1.0.hs37d5
+genome_assembly <- 'hg19' 
+\dontshow{
+  genome_assembly <- 'MafDb.ExAC.r1.0.hs37d5'
 }
-
-# to use a provided database by name. here the ExAC database
-maeResEx <- add_gnomAD_AF(maeCounts, genome_assembly = 'MafDb.ExAC.r1.0.hs37d5', pop="AF")
+maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = genome_assembly, pop="AF")
 
 }
 \author{

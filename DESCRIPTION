@@ -29,8 +29,10 @@ Imports:
   BiocGenerics,
   GenomicScores,
   S4Vectors,
-  IRanges
+  IRanges,
+  pak
 Depends: 
+  R (>= 3.6), 
   data.table
 Suggests:
     BiocManager,

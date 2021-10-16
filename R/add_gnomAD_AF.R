@@ -75,10 +75,8 @@ add_gnomAD_AF <- function(data,
 
 .get_mafdb <- function(pkg_name){
   if(!requireNamespace(pkg_name, quietly=TRUE)){
-    warning("The given MafDb is not installed:", pkg_name, ". We will do it now!")
-    if (!requireNamespace("BiocManager", quietly=TRUE))
-      install.packages("BiocManager")
-    BiocManager::install(pkg_name, update=FALSE)
+    warning("The given MafDb is not installed: '", pkg_name, "'. We will do it now!")
+    pkg_install(pkg_name, ask=FALSE)
   }
   
   mafdb <- getFromNamespace(pkg_name, pkg_name)

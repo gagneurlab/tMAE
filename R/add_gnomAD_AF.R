@@ -60,7 +60,7 @@ score_gnomAD_GR <- function(gr,
   # Add score of all, African, American, East Asian and Non-Finnish European
   pt <- score(mafdb, gr, pop = pops) %>% as.data.table()
   colnames(pt) <- pops
-  return(pt)
+  return(list(score = pt,index = chr_matching_index))
 }
 
 add_gnomAD_AF <- function(data,
@@ -75,8 +75,10 @@ add_gnomAD_AF <- function(data,
                 strand = '*')
   
   # add scores to data table
-  gr_scores <- score_gnomAD_GR(gr,genome_assembly,max_af_cutoff,pops)
-  res <- cbind(data, gr_scores) %>% as.data.table()
+  scoring_list <- score_gnomAD_GR(gr,genome_assembly,max_af_cutoff,pops)
+  gr_scores <- scoring_list$score
+  matching_index <- scoring_list$index
+  res <- cbind(data[matching_index], gr_scores) %>% as.data.table()
   
   # Compute the MAX_AF based on all provided population columns
   # return -1 if only NAs are present (to avoid a warning)

@@ -31,7 +31,7 @@ NULL
 
 globalVariables(c(
         ".",
-        "..populations",
+        "..pops",
         "altCount",
         "altRatio",
         "FC",

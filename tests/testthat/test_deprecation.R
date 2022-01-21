@@ -6,5 +6,5 @@ test_that("End to end", {
     
     expect_warning({ maeRes <- DESeq4MAE(maeCounts) }, "NaNs produced")
     expect_warning(add_gnomAD_AF(data=maeRes, gene_assembly='MafDb.ExAC.r1.0.hs37d5', pops="AF"),
-            "'gene_assembly' is deprecated")
+            c("'gene_assembly' is deprecated","more than one seqlevels style supplied"))
 })

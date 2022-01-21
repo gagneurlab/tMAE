@@ -24,6 +24,34 @@
 #' }
 #' 
 
+# use score_gnomAD_GR as helper to add gnomAD frequencies to data
+add_gnomAD_AF <- function(data,
+                       genome_assembly = c('hg19', 'hs37d5', 'hg38', 'GRCh38'),
+                       max_af_cutoff = .001,
+                       pops = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
+                       ...){
+  
+  # Transform data into GRanges object
+  gr <- GRanges(seqnames = data$contig,
+                ranges = IRanges(start=data$position, width=1), 
+                strand = '*')
+  
+  # add scores to data table
+  score_table <- score_gnomAD_GR(gr,genome_assembly,max_af_cutoff,pops)
+  res <- cbind(data, score_table) %>% as.data.table()
+  
+  # Compute the MAX_AF based on all provided population columns
+  # return -1 if only NAs are present (to avoid a warning)
+  res$MAX_AF <- apply(res[, ..pops], 1, 
+                      FUN=function(x){ max(x, -1, na.rm=TRUE) })
+  
+  # Replace Inf/-1 with NA
+  res[is.infinite(MAX_AF) | MAX_AF == -1, MAX_AF := NA]
+  res[, rare := (MAX_AF <= max_af_cutoff | is.na(MAX_AF))]
+  
+  return(res)
+}
+
 # add gnomAD frequencies to granges
 score_gnomAD_GR <- function(gr, 
     genome_assembly = c('hg19', 'hs37d5', 'hg38', 'GRCh38'),
@@ -60,33 +88,6 @@ score_gnomAD_GR <- function(gr,
   colnames(pt) <- pops
   
   return(pt)
-}
-
-add_gnomAD_AF <- function(data,
-                       genome_assembly = c('hg19', 'hs37d5', 'hg38', 'GRCh38'),
-                       max_af_cutoff = .001,
-                       pops = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
-                       ...){
-  
-  # Transform data into GRanges object
-  gr <- GRanges(seqnames = data$contig,
-                ranges = IRanges(start=data$position, width=1), 
-                strand = '*')
-  
-  # add scores to data table
-  score_table <- score_gnomAD_GR(gr,genome_assembly,max_af_cutoff,pops)
-  res <- cbind(data, score_table) %>% as.data.table()
-  
-  # Compute the MAX_AF based on all provided population columns
-  # return -1 if only NAs are present (to avoid a warning)
-  res$MAX_AF <- apply(res[, ..pops], 1, 
-                      FUN=function(x){ max(x, -1, na.rm=TRUE) })
-  
-  # Replace Inf/-1 with NA
-  res[is.infinite(MAX_AF) | MAX_AF == -1, MAX_AF := NA]
-  res[, rare := (MAX_AF <= max_af_cutoff | is.na(MAX_AF))]
-  
-  return(res)
 }
 
 .get_mafdb <- function(pkg_name){

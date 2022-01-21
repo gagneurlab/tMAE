@@ -7,7 +7,7 @@
 #'                It can also be any full string of a MafDb provided by 
 #'                \code{\link[GenomicScores]{availableGScores}}.
 #' @param max_af_cutoff cutoff for a variant to be considered rare. Default is .001.
-#' @param populations The population to be annotated.
+#' @param pops The population to be annotated.
 #' @param ... Used for backwards compatibility (gene_assembly -> genome_assembly)
 #' @return A data.table with the original contents plus columns containing allele frequencies from different gnomAD populations.
 #' @export
@@ -23,10 +23,40 @@
 #' maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = genome_assembly, pop="AF")
 #' }
 #' 
-add_gnomAD_AF <- function(data, 
+
+# use score_gnomAD_GR as helper to add gnomAD frequencies to data
+add_gnomAD_AF <- function(data,
+                       genome_assembly = c('hg19', 'hs37d5', 'hg38', 'GRCh38'),
+                       max_af_cutoff = .001,
+                       pops = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
+                       ...){
+  
+  # Transform data into GRanges object
+  gr <- GRanges(seqnames = data$contig,
+                ranges = IRanges(start=data$position, width=1), 
+                strand = '*')
+  
+  # add scores to data table
+  score_table <- score_gnomAD_GR(gr,genome_assembly,max_af_cutoff,pops)
+  res <- cbind(data, score_table) %>% as.data.table()
+  
+  # Compute the MAX_AF based on all provided population columns
+  # return -1 if only NAs are present (to avoid a warning)
+  res$MAX_AF <- apply(res[, ..pops], 1, 
+                      FUN=function(x){ max(x, -1, na.rm=TRUE) })
+  
+  # Replace Inf/-1 with NA
+  res[is.infinite(MAX_AF) | MAX_AF == -1, MAX_AF := NA]
+  res[, rare := (MAX_AF <= max_af_cutoff | is.na(MAX_AF))]
+  
+  return(res)
+}
+
+# add gnomAD frequencies to granges
+score_gnomAD_GR <- function(gr, 
     genome_assembly = c('hg19', 'hs37d5', 'hg38', 'GRCh38'),
     max_af_cutoff = .001,
-    populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
+    pops = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
     ...){
   if("gene_assembly" %in% names(list(...))){
     warning("'gene_assembly' is deprecated. Please use 'genome_assembly' instead.")
@@ -46,30 +76,18 @@ add_gnomAD_AF <- function(data,
     ))
   }
     
-  if(!all(populations %in% populations(mafdb))){
+  if(!all(pops %in% populations(mafdb))){
     stop("Please provide only populations provided by gnomAD!")
   }
   
-  # Transform data into GRanges object
-  gr <- GRanges(seqnames = data$contig,
-      ranges = IRanges(start=data$position, width=1), 
-      strand = '*')
+  # Match seqnames style
+  seqlevelsStyle(gr) <- seqlevelsStyle(mafdb)
   
   # Add score of all, African, American, East Asian and Non-Finnish European
-  pt <- score(mafdb, gr, pop = populations) %>% as.data.table()
-  colnames(pt) <- populations
-  res <- cbind(data, pt) %>% as.data.table()
+  pt <- score(mafdb, gr, pop = pops) %>% as.data.table()
+  colnames(pt) <- pops
   
-  # Compute the MAX_AF based on all provided population columns
-  # return -1 if only NAs are present (to avoid a warning)
-  res$MAX_AF <- apply(res[, ..populations], 1, 
-      FUN=function(x){ pmax(x, -1, na.rm=TRUE) })
-  
-  # Replace Inf/-1 with NA
-  res[is.infinite(MAX_AF) | MAX_AF == -1, MAX_AF := NA]
-  res[, rare := (MAX_AF <= max_af_cutoff | is.na(MAX_AF))]
-  
-  return(res)
+  return(pt)
 }
 
 .get_mafdb <- function(pkg_name){
@@ -84,4 +102,3 @@ add_gnomAD_AF <- function(data,
   mafdb <- getFromNamespace(pkg_name, pkg_name)
   mafdb
 }
-

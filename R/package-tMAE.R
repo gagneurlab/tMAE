@@ -20,6 +20,7 @@
 #'          makeExampleDESeqDataSet show fpkm fpm
 #'          estimateSizeFactorsForMatrix replaceOutliers
 #'          dispersions dispersions<- nbinomWaldTest results
+#' @importFrom GenomeInfoDb seqlevelsStyle
 #' @importFrom GenomicRanges GRanges
 #' @importFrom S4Vectors DataFrame
 #' @importFrom GenomicScores populations seqnames

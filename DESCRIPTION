@@ -23,6 +23,7 @@ RoxygenNote: 7.1.2
 Imports: 
   dplyr,
   magrittr,
+  GenomeInfoDb,
   GenomicRanges,
   ggplot2,
   DESeq2,

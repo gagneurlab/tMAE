@@ -8,7 +8,7 @@ add_gnomAD_AF(
   data,
   genome_assembly = c("hg19", "hs37d5", "hg38", "GRCh38"),
   max_af_cutoff = 0.001,
-  populations = c("AF", "AF_afr", "AF_amr", "AF_eas", "AF_nfe", "AF_popmax"),
+  pops = c("AF", "AF_afr", "AF_amr", "AF_eas", "AF_nfe", "AF_popmax"),
   ...
 )
 }
@@ -21,7 +21,7 @@ It can also be any full string of a MafDb provided by
 
 \item{max_af_cutoff}{cutoff for a variant to be considered rare. Default is .001.}
 
-\item{populations}{The population to be annotated.}
+\item{pops}{The population to be annotated.}
 
 \item{...}{Used for backwards compatibility (gene_assembly -> genome_assembly)}
 }

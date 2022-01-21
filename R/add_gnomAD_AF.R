@@ -31,6 +31,10 @@ add_gnomAD_AF <- function(data,
                        pops = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
                        ...){
   
+  if("gene_assembly" %in% names(list(...))){
+    warning("'gene_assembly' is deprecated. Please use 'genome_assembly' instead.")
+    genome_assembly <- list(...)[['gene_assembly']]
+  }
   # Transform data into GRanges object
   gr <- GRanges(seqnames = data$contig,
                 ranges = IRanges(start=data$position, width=1), 
@@ -58,10 +62,6 @@ score_gnomAD_GR <- function(gr,
     max_af_cutoff = .001,
     pops = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
     ...){
-  if("gene_assembly" %in% names(list(...))){
-    warning("'gene_assembly' is deprecated. Please use 'genome_assembly' instead.")
-    genome_assembly <- list(...)[['gene_assembly']]
-  }
   
   if(genome_assembly %in% BiocManager::available("MafDb")){
     mafdb <- .get_mafdb(genome_assembly)
@@ -79,9 +79,6 @@ score_gnomAD_GR <- function(gr,
   if(!all(pops %in% populations(mafdb))){
     stop("Please provide only populations provided by gnomAD!")
   }
-  
-  # Match seqnames style
-  seqlevelsStyle(gr) <- seqlevelsStyle(mafdb)
   
   # Add score of all, African, American, East Asian and Non-Finnish European
   pt <- score(mafdb, gr, pop = pops) %>% as.data.table()

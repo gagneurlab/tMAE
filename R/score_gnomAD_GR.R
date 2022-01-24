@@ -1,7 +1,7 @@
 #' Add allele frequencies from gnomAD
 #'
 #' @description Helper Method for add_gnomAD_AF.R generates the gnomAD scoring table given a GenomicRanges object.
-#' @author Vicente Yepez
+#' @author Vicente Yepez and Nicholas Smith
 #' @param gr GenomicRanges object
 #' @param genome_assembly either 'hg19/hs37d5' or 'hg38/GRCh38' indicating the genome assembly of the variants.
 #'                It can also be any full string of a MafDb provided by 
@@ -10,16 +10,6 @@
 #' @param pops The population to be annotated.
 #' @return A data.table with the scores of each position in the gr object using the mafdb database
 #' @export
-#' 
-#' @examples
-#' maeCounts <- fread(file)
-#' maeRes <- DESeq4MAE(maeCounts)
-#' 
-#' # define the assembly/MafDb you want e.g. hg19, MafDb.gnomAD.r2.1.hs37d5, or MafDb.ExAC.r1.0.hs37d5
-#' \dontrun{
-#' genome_assembly <- 'hg19' 
-#' maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = genome_assembly, pop="AF")
-#' }
 #' 
 
 # add gnomAD frequencies to granges

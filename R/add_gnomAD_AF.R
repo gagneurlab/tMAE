@@ -10,7 +10,8 @@
 #' 
 merge_scores <- function(data, scores, 
                          populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
-                         max_af_cutoff = 0.001){
+                         max_af_cutoff = 0.001,
+                         ...){
   
 
     res <- cbind(data, scores) %>% as.data.table()

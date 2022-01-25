@@ -1,27 +1,31 @@
-
 #' Add allele frequencies from gnomAD from GRanges
 #'
-#' @description Add allele frequency information from gnomAD.
+#' @description merge and append information from gnomAD and a data table
 #' @author Vicente Yepez
-#' @param gr A GRanges object to overlap with gnomAD
-#' @param genome_assembly either 'hg19/hs37d5' or 'hg38/GRCh38' indicating the genome assembly of the variants.
-#'                It can also be any full string of a MafDb provided by 
-#'                \code{\link[GenomicScores]{availableGScores}}.
-#' @param max_af_cutoff cutoff for a variant to be considered rare. Default is .001.
+#' @param data A data.table object
+#' @param scores A data.table object of frequency scores generated from gnomAD
 #' @param populations The population to be annotated.
-#' @param ... Used for backwards compatibility (gene_assembly -> genome_assembly)
+#' @param max_af_cutoff cutoff for a variant to be considered rare. Default is .001.
 #' @return A data.table with the original contents plus columns containing allele frequencies from different gnomAD populations.
 #' @rdname AF-method
 #' 
-score_data_GR <- function(object,
-    genome_assembly = c('hg19', 'hs37d5', 'hg38', 'GRCh38'),
-    max_af_cutoff = .001,
-    populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
-    ...){
-
-    data <- as.data.table(object)
-    res <- score_data(data,genome_assembly= genome_assembly,populations = populations,... = ...)
-
+merge_scores <- function(data,
+                         scores, 
+                         populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
+                         max_af_cutoff = 0.001,
+                         ...){
+  
+    res <- cbind(data, scores) %>% as.data.table()
+    
+    # Compute the MAX_AF based on all provided population columns
+    # return -1 if only NAs are present (to avoid a warning)
+    res$MAX_AF <- apply(res[, ..populations], 1, 
+                        FUN=function(x){ max(x, -1, na.rm=TRUE) })
+    
+    # Replace Inf/-1 with NA
+    res[is.infinite(MAX_AF) | MAX_AF == -1, MAX_AF := NA]
+    res[, rare := (MAX_AF <= max_af_cutoff | is.na(MAX_AF))]
+    
     return(res)
 }
 
@@ -40,7 +44,7 @@ score_data_GR <- function(object,
 #' @rdname AF-method
 #' 
 score_data <- function(object, 
-    genome_assembly = c('hg19', 'hs37d5', 'hg38', 'GRCh38'),
+    genome_assembly = 'hg19',
     max_af_cutoff = .001,
     populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
     ...){
@@ -52,7 +56,6 @@ score_data <- function(object,
   if(genome_assembly %in% BiocManager::available("MafDb")){
     mafdb <- .get_mafdb(genome_assembly)
   } else {
-    genome_assembly <- match.arg(genome_assembly)
     mafdb <- .get_mafdb(switch(genome_assembly, 
       hg19   = "MafDb.gnomAD.r2.1.hs37d5",
       hs37d5 = "MafDb.gnomAD.r2.1.hs37d5",
@@ -66,26 +69,11 @@ score_data <- function(object,
     stop("Please provide only populations provided by gnomAD!")
   }
   
-  # Transform data into GRanges object
-  gr <- GRanges(seqnames = data$contig,
-      ranges = IRanges(start=data$position, width=1), 
-      strand = '*')
-  
   # Add score of all, African, American, East Asian and Non-Finnish European
-  pt <- score(mafdb, gr, pop = populations) %>% as.data.table()
+  pt <- score(mafdb, object, pop = populations) %>% as.data.table()
   colnames(pt) <- populations
-  res <- cbind(data, pt) %>% as.data.table()
   
-  # Compute the MAX_AF based on all provided population columns
-  # return -1 if only NAs are present (to avoid a warning)
-  res$MAX_AF <- apply(res[, ..populations], 1, 
-      FUN=function(x){ max(x, -1, na.rm=TRUE) })
-  
-  # Replace Inf/-1 with NA
-  res[is.infinite(MAX_AF) | MAX_AF == -1, MAX_AF := NA]
-  res[, rare := (MAX_AF <= max_af_cutoff | is.na(MAX_AF))]
-  
-  return(res)
+  return(pt)
 }
 
 .get_mafdb <- function(pkg_name){
@@ -101,6 +89,28 @@ score_data <- function(object,
   mafdb
 }
 
+MAE_gnomAD <- function(object,...){
+  # create GRanges from a MAE count table
+  gr <- GRanges(seqnames = object$contig,
+                ranges = IRanges(start=object$position, width=1), 
+                strand = '*')
+  # score the gr
+  scores <- score_data(gr,...)
+  # merge the scores with the original object
+  res <- merge_scores(object,scores,...)
+  return (res)
+}
+
+GR_gnomAD <- function(object,...){
+    
+  # create a data table from the GRanges object
+  data <- as.data.table(object)
+  # score the original GRanges object 
+  scores <- score_data(object,...)
+  # merge the data.table created and the resulting scores
+  res <- merge_scores(data,scores,...)
+  return(res)
+}
 
 #' @title add gnomAD Frequencies to different datasets
 #' 
@@ -114,10 +124,9 @@ score_data <- function(object,
 #' genome_assembly <- 'hg19' 
 #' maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = genome_assembly, pop="AF")
 #' }
-#' @name add_gnomAD_AF
 #' @export
-setMethod("add_gnomAD_AF", "data.table", score_data)
+setMethod("add_gnomAD_AF", signature = "data.table", MAE_gnomAD)
 
 #' @rdname AF-method
 #' @export
-setReplaceMethod("add_gnomAD_AF", "GRanges", score_data_GR)
+setMethod("add_gnomAD_AF", signature = "GRanges", GR_gnomAD)

@@ -7,14 +7,12 @@
 #' @param populations The population to be annotated.
 #' @param max_af_cutoff cutoff for a variant to be considered rare. Default is .001.
 #' @return A data.table with the original contents plus columns containing allele frequencies from different gnomAD populations.
-#' @rdname AF-method
 #' 
-merge_scores <- function(data,
-                         scores, 
+merge_scores <- function(data, scores, 
                          populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
-                         max_af_cutoff = 0.001,
-                         ...){
+                         max_af_cutoff = 0.001){
   
+
     res <- cbind(data, scores) %>% as.data.table()
     
     # Compute the MAX_AF based on all provided population columns
@@ -41,7 +39,6 @@ merge_scores <- function(data,
 #' @param populations The population to be annotated.
 #' @param ... Used for backwards compatibility (gene_assembly -> genome_assembly)
 #' @return A data.table with the original contents plus columns containing allele frequencies from different gnomAD populations.
-#' @rdname AF-method
 #' 
 score_data <- function(object, 
     genome_assembly = 'hg19',
@@ -112,21 +109,29 @@ GR_gnomAD <- function(object,...){
   return(res)
 }
 
-#' @title add gnomAD Frequencies to different datasets
+#' @title Add AF to MAE counts
+#' @description appending the minor allele frequency to allelic counts using gnomAD
+#' @param object a data.frame containing allelic counts.
+#' @param list ... any other parameters such as 'max_af_cutoff', or 'populations' within gnomAD
+#' @return a data.frame containing allelic counts and minor allele frequencies
 #' 
 #' @examples
-#' file <- system.file("extdata", "allelic_counts_HG00187.csv", package = "tMAE", mustWork = TRUE)
-#' maeCounts <- fread(file)
-#' maeRes <- DESeq4MAE(maeCounts)
+#' file <- system.file("extdata", "allelic_counts_hg00187.csv", package = "tmae", mustwork = true)
+#' maecounts <- fread(file)
+#' maeres <- deseq4mae(maecounts)
 #' 
-#' # define the assembly/MafDb you want e.g. hg19, MafDb.gnomAD.r2.1.hs37d5, or MafDb.ExAC.r1.0.hs37d5
+#' # define the assembly/mafdb you want e.g. hg19, mafdb.gnomad.r2.1.hs37d5, or mafdb.exac.r1.0.hs37d5
 #' \dontrun{
 #' genome_assembly <- 'hg19' 
-#' maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = genome_assembly, pop="AF")
+#' maeres <- add_gnomad_af(maecounts, genome_assembly = genome_assembly, pop="af")
 #' }
 #' @export
 setMethod("add_gnomAD_AF", signature = "data.table", MAE_gnomAD)
 
-#' @rdname AF-method
+#' @title Add AF to GRanges
+#' @description appending the minor allele frequency to GRanges using gnomAD
+#' @param object a GRanges object
+#' @param list ... any other parameters such as 'max_af_cutoff', or 'populations' within gnomAD
+#' @return a data.frame containing GRanges data as well as the minor allele frequencies
 #' @export
 setMethod("add_gnomAD_AF", signature = "GRanges", GR_gnomAD)

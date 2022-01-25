@@ -2,21 +2,29 @@
 % Please edit documentation in R/add_gnomAD_AF.R
 \name{add_gnomAD_AF,data.table-method}
 \alias{add_gnomAD_AF,data.table-method}
-\title{add gnomAD Frequencies to different datasets}
+\title{Add AF to MAE counts}
 \usage{
 \S4method{add_gnomAD_AF}{data.table}(object, ...)
 }
+\arguments{
+\item{object}{a data.frame containing allelic counts.}
+
+\item{list}{... any other parameters such as 'max_af_cutoff', or 'populations' within gnomAD}
+}
+\value{
+a data.frame containing allelic counts and minor allele frequencies
+}
 \description{
-add gnomAD Frequencies to different datasets
+appending the minor allele frequency to allelic counts using gnomAD
 }
 \examples{
-file <- system.file("extdata", "allelic_counts_HG00187.csv", package = "tMAE", mustWork = TRUE)
-maeCounts <- fread(file)
-maeRes <- DESeq4MAE(maeCounts)
+file <- system.file("extdata", "allelic_counts_hg00187.csv", package = "tmae", mustwork = true)
+maecounts <- fread(file)
+maeres <- deseq4mae(maecounts)
 
-# define the assembly/MafDb you want e.g. hg19, MafDb.gnomAD.r2.1.hs37d5, or MafDb.ExAC.r1.0.hs37d5
+# define the assembly/mafdb you want e.g. hg19, mafdb.gnomad.r2.1.hs37d5, or mafdb.exac.r1.0.hs37d5
 \dontrun{
 genome_assembly <- 'hg19' 
-maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = genome_assembly, pop="AF")
+maeres <- add_gnomad_af(maecounts, genome_assembly = genome_assembly, pop="af")
 }
 }

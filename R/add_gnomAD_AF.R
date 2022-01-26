@@ -90,9 +90,9 @@ function(
                 ranges = IRanges(start=object$position, width=1), 
                 strand = '*')
   # score the gr
-  scores <- score_data(gr,...)
+  scores <- score_data(gr,genome_assembly=genome_assembly,populations = populations, max_af_cutoff = max_af_cutoff,...)
   # merge the scores with the original object
-  res <- merge_scores(object,scores,...)
+  res <- merge_scores(object,scores,populations = populations, max_af_cutoff = max_af_cutoff)
   return (res)
 })
 

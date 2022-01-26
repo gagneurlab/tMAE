@@ -64,9 +64,6 @@ score_data <- function(object,
   mafdb
 }
 
-MAE_gnomAD <- function(object,...){
-}
-
 
 #' @title Add AF to MAE counts
 #' @description appending the minor allele frequency to MAE counts using gnomAD

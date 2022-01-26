@@ -15,16 +15,5 @@
 a data.frame containing allelic counts and minor allele frequencies
 }
 \description{
-appending the minor allele frequency to allelic counts using gnomAD
-}
-\examples{
-file <- system.file("extdata", "allelic_counts_hg00187.csv", package = "tmae", mustwork = true)
-maecounts <- fread(file)
-maeres <- deseq4mae(maecounts)
-
-# define the assembly/mafdb you want e.g. hg19, mafdb.gnomad.r2.1.hs37d5, or mafdb.exac.r1.0.hs37d5
-\dontrun{
-genome_assembly <- 'hg19' 
-maeres <- add_gnomad_af(maecounts, genome_assembly = genome_assembly, pop="af")
-}
+Add AF to MAE counts
 }

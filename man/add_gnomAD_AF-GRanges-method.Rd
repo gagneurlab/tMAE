@@ -4,12 +4,26 @@
 \alias{add_gnomAD_AF,GRanges-method}
 \title{Add AF to GRanges}
 \usage{
-\S4method{add_gnomAD_AF}{GRanges}(object, ...)
+\S4method{add_gnomAD_AF}{GRanges}(
+  object,
+  genome_assembly = "hg19",
+  max_af_cutoff = 0.001,
+  populations = c("AF", "AF_afr", "AF_amr", "AF_eas", "AF_nfe", "AF_popmax"),
+  ...
+)
 }
 \arguments{
 \item{object}{a GRanges object}
 
-\item{list}{... any other parameters such as 'max_af_cutoff', or 'populations' within gnomAD}
+\item{genome_assembly}{one of "hg19", "hs37d5", "hg38", "GRCh38" 
+It can also be any full string of a MafDb provided by 
+\code{\link[GenomicScores]{availableGScores}}.}
+
+\item{max_af_cutoff}{cutoff for a variant to be considered rare. Default 0.001}
+
+\item{populations}{The populations to be annotatated.}
+
+\item{...}{Used for backwards compatibility (gene_assembly -> genome_assembly)}
 }
 \value{
 a data.frame containing GRanges data as well as the minor allele frequencies

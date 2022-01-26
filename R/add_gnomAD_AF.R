@@ -1,6 +1,6 @@
 merge_scores <- function(data, scores, 
-                         populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
                          max_af_cutoff = 0.001,
+                         populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
                          ...){
   
 
@@ -65,6 +65,26 @@ score_data <- function(object,
 }
 
 MAE_gnomAD <- function(object,...){
+}
+
+
+#' @title Add AF to MAE counts
+#' @description appending the minor allele frequency to MAE counts using gnomAD
+#' @param object data.table containing allelic counts
+#' @param genome_assembly one of "hg19", "hs37d5", "hg38", "GRCh38" 
+#'                It can also be any full string of a MafDb provided by 
+#'                \code{\link[GenomicScores]{availableGScores}}.
+#' @param max_af_cutoff cutoff for a variant to be considered rare. Default 0.001
+#' @param populations The populations to be annotatated.
+#' @param ... Used for backwards compatibility (gene_assembly -> genome_assembly)
+#' @return a data.frame containing GRanges data as well as the minor allele frequencies
+setMethod("add_gnomAD_AF", signature = "data.table", 
+function(
+    object, 
+    genome_assembly = 'hg19',
+    max_af_cutoff = .001,
+    populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
+    ... ){
   # create GRanges from a MAE count table
   gr <- GRanges(seqnames = object$contig,
                 ranges = IRanges(start=object$position, width=1), 
@@ -74,30 +94,36 @@ MAE_gnomAD <- function(object,...){
   # merge the scores with the original object
   res <- merge_scores(object,scores,...)
   return (res)
-}
-
-GR_gnomAD <- function(object,...){
-    
-  # create a data table from the GRanges object
-  data <- as.data.table(object)
-  # score the original GRanges object 
-  scores <- score_data(object,...)
-  # merge the data.table created and the resulting scores
-  res <- merge_scores(data,scores,...)
-  return(res)
-}
-
-#' @title Add AF to MAE counts
-#' @param object a data.frame containing allelic counts.
-#' @param list ... any other parameters such as 'max_af_cutoff', or 'populations' within gnomAD
-#' @return a data.frame containing allelic counts and minor allele frequencies
-#' @export
-setMethod("add_gnomAD_AF", signature = "data.table", MAE_gnomAD)
+})
 
 #' @title Add AF to GRanges
 #' @description appending the minor allele frequency to GRanges using gnomAD
 #' @param object a GRanges object
-#' @param list ... any other parameters such as 'max_af_cutoff', or 'populations' within gnomAD
+#' @param genome_assembly one of "hg19", "hs37d5", "hg38", "GRCh38" 
+#'                It can also be any full string of a MafDb provided by 
+#'                \code{\link[GenomicScores]{availableGScores}}.
+#' @param max_af_cutoff cutoff for a variant to be considered rare. Default 0.001
+#' @param populations The populations to be annotatated.
+#' @param ... Used for backwards compatibility (gene_assembly -> genome_assembly)
 #' @return a data.frame containing GRanges data as well as the minor allele frequencies
 #' @export
-setMethod("add_gnomAD_AF", signature = "GRanges", GR_gnomAD)
+setMethod("add_gnomAD_AF", signature = "GRanges",
+function(
+    object, 
+    genome_assembly = 'hg19',
+    max_af_cutoff = .001,
+    populations = c('AF', 'AF_afr', 'AF_amr', 'AF_eas', 'AF_nfe', 'AF_popmax'),
+    ...) {
+
+  # create a data table from the GRanges object
+  data <- as.data.table(object)
+  # score the original GRanges object 
+  scores <- score_data(object,
+    genome_assembly = genome_assembly,
+    max_af_cutoff = max_af_cutoff,
+    populations = populations,
+    ...)
+  # merge the data.table created and the resulting scores
+  res <- merge_scores(data, scores, max_af_cutoff = max_af_cutoff, populations = populations)
+  return(res)
+})

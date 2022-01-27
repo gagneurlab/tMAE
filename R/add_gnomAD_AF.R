@@ -31,13 +31,13 @@ score_data <- function(object,
   if(genome_assembly %in% BiocManager::available("MafDb")){
     mafdb <- .get_mafdb(genome_assembly)
   } else {
-    mafdb <- .get_mafdb(switch(genome_assembly, 
+    genome_assembly <- switch(genome_assembly, 
       hg19   = "MafDb.gnomAD.r2.1.hs37d5",
       hs37d5 = "MafDb.gnomAD.r2.1.hs37d5",
       hg38   = "MafDb.gnomAD.r2.1.GRCh38",
       GRCh38 = "MafDb.gnomAD.r2.1.GRCh38",
-      stop("Please provide a supported genome assembly version. Not: ", genome_assembly)
-    ))
+      stop("Please provide a supported genome assembly version. Not: ", genome_assembly) )
+    mafdb <- .get_mafdb(genome_assembly)
   }
     
   if(!all(populations %in% populations(mafdb))){

@@ -31,8 +31,13 @@ score_data <- function(object,
   if(genome_assembly %in% BiocManager::available("MafDb")){
     mafdb <- .get_mafdb(genome_assembly)
   } else {
-    genome_assembly <- "MafDb.gnomAD.r2.1.hs37d5"
-    mafdb <- .get_mafdb(genome_assembly)
+    mafdb <- .get_mafdb(switch(genome_assembly, 
+      hg19   = "MafDb.gnomAD.r2.1.hs37d5",
+      hs37d5 = "MafDb.gnomAD.r2.1.hs37d5",
+      hg38   = "MafDb.gnomAD.r2.1.GRCh38",
+      GRCh38 = "MafDb.gnomAD.r2.1.GRCh38",
+      stop("Please provide a supported genome assembly version. Not: ", genome_assembly)
+    ))
   }
     
   if(!all(populations %in% populations(mafdb))){
@@ -62,6 +67,7 @@ score_data <- function(object,
 #' @rdname add_gnomAD_AF
 #'
 #' @examples
+#' BiocManager::install("MafDb.gnomAD.r2.1.hs37d5")
 #' file <- system.file("extdata", "allelic_counts_HG00187.csv", package = "tMAE", mustWork = TRUE)
 #' maeCounts <- fread(file)
 #' maeRes <- DESeq4MAE(maeCounts)
@@ -89,6 +95,7 @@ function(
 #' @rdname add_gnomAD_AF
 #'
 #' @examples
+#' BiocManager::install("MafDb.gnomAD.r2.1.hs37d5")
 #' file <- system.file("extdata", "GR_HG00187.Rds", package = "tMAE", mustWork = TRUE)
 #' gr <- readRDS(file)
 #' genome_assembly <- 'hg19'

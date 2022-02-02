@@ -21,15 +21,15 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.1.2
 Imports: 
-  dplyr,
-  magrittr,
-  GenomicRanges,
-  ggplot2,
-  DESeq2,
   BiocGenerics,
+  DESeq2,
+  dplyr,
+  GenomicRanges,
   GenomicScores,
-  S4Vectors,
-  IRanges
+  ggplot2,
+  IRanges,
+  magrittr,
+  S4Vectors
 Depends: 
   R (>= 3.6), 
   data.table

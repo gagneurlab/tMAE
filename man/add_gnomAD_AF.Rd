@@ -55,14 +55,14 @@ file <- system.file("extdata", "allelic_counts_HG00187.csv", package = "tMAE", m
 maeCounts <- fread(file)
 maeRes <- DESeq4MAE(maeCounts)
 genome_assembly <- 'hg19'
-res <- add_gnomAD_AF(maeRes, genome_assembly = genome_assembly, pop="AF")
+res <- add_gnomAD_AF(maeRes, genome_assembly = genome_assembly, populations = "AF")
 }
 
 \dontrun{
 file <- system.file("extdata", "GR_HG00187.Rds", package = "tMAE", mustWork = TRUE)
 gr <- readRDS(file)
 genome_assembly <- 'hg19'
-res <- add_gnomAD_AF(gr, genome_assembly = genome_assembly, pop="AF")
+res <- add_gnomAD_AF(gr, genome_assembly = genome_assembly, populations = "AF")
 }
 
 }

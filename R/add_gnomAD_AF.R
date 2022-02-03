@@ -50,7 +50,7 @@ score_data <- function(gr,
 #' maeCounts <- fread(file)
 #' maeRes <- DESeq4MAE(maeCounts)
 #' genome_assembly <- 'hg19'
-#' res <- add_gnomAD_AF(maeRes, genome_assembly = genome_assembly, pop="AF")
+#' res <- add_gnomAD_AF(maeRes, genome_assembly = genome_assembly, populations = "AF")
 #' }
 #'
 setMethod("add_gnomAD_AF", signature = "data.table", 
@@ -89,7 +89,7 @@ function(
 #' file <- system.file("extdata", "GR_HG00187.Rds", package = "tMAE", mustWork = TRUE)
 #' gr <- readRDS(file)
 #' genome_assembly <- 'hg19'
-#' res <- add_gnomAD_AF(gr, genome_assembly = genome_assembly, pop="AF")
+#' res <- add_gnomAD_AF(gr, genome_assembly = genome_assembly, populations = "AF")
 #' }
 #' 
 setMethod("add_gnomAD_AF", signature = "GRanges",

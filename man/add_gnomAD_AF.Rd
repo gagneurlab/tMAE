@@ -2,47 +2,66 @@
 % Please edit documentation in R/add_gnomAD_AF.R
 \name{add_gnomAD_AF}
 \alias{add_gnomAD_AF}
-\title{Add allele frequencies from gnomAD}
+\alias{add_gnomAD_AF,data.table-method}
+\alias{add_gnomAD_AF,GRanges-method}
+\title{Add AF to GRanges}
 \usage{
 add_gnomAD_AF(
-  data,
-  genome_assembly = c("hg19", "hs37d5", "hg38", "GRCh38"),
+  object,
+  genome_assembly = "hg19",
+  max_af_cutoff = 0.001,
+  populations = c("AF", "AF_afr", "AF_amr", "AF_eas", "AF_nfe", "AF_popmax"),
+  ...
+)
+
+\S4method{add_gnomAD_AF}{data.table}(
+  object,
+  genome_assembly = "hg19",
+  max_af_cutoff = 0.001,
+  populations = c("AF", "AF_afr", "AF_amr", "AF_eas", "AF_nfe", "AF_popmax"),
+  ...
+)
+
+\S4method{add_gnomAD_AF}{GRanges}(
+  object,
+  genome_assembly = "hg19",
   max_af_cutoff = 0.001,
   populations = c("AF", "AF_afr", "AF_amr", "AF_eas", "AF_nfe", "AF_popmax"),
   ...
 )
 }
 \arguments{
-\item{data}{A data.frame containing allelic counts.}
+\item{object}{either a data.table of allelic counts or a GRanges object}
 
-\item{genome_assembly}{either 'hg19/hs37d5' or 'hg38/GRCh38' indicating the genome assembly of the variants.
-It can also be any full string of a MafDb provided by 
+\item{genome_assembly}{one of "hg19", "hs37d5", "hg38", "GRCh38"
+It can also be any full string of a MafDb provided by
 \code{\link[GenomicScores]{availableGScores}}.}
 
-\item{max_af_cutoff}{cutoff for a variant to be considered rare. Default is .001.}
+\item{max_af_cutoff}{cutoff for a variant to be considered rare. Default 0.001}
 
-\item{populations}{The population to be annotated.}
+\item{populations}{The populations to be annotatated.}
 
 \item{...}{Used for backwards compatibility (gene_assembly -> genome_assembly)}
 }
 \value{
-A data.table with the original contents plus columns containing allele frequencies from different gnomAD populations.
+a data.frame containing original data as well as the minor allele frequencies
 }
 \description{
-Add allele frequency information from gnomAD.
+appending the minor allele frequency to GRanges using gnomAD
 }
 \examples{
-file <- system.file("extdata", "allelic_counts_HG00187.csv", package = "tMAE", mustWork = TRUE)
-maeCounts <- fread(file)
-maeRes <- DESeq4MAE(maeCounts)
-
-# define the assembly/MafDb you want e.g. hg19, MafDb.gnomAD.r2.1.hs37d5, or MafDb.ExAC.r1.0.hs37d5
+file <- system.file("extdata", "GR_HG00187.Rds", package = "tMAE", mustWork = TRUE)
+gr <- readRDS(file)
+genome_assembly <- 'MafDb.ExAC.r1.0.hs37d5'
 \dontrun{
-genome_assembly <- 'hg19' 
-maeRes <- add_gnomAD_AF(maeCounts, genome_assembly = genome_assembly, pop="AF")
+res <- add_gnomAD_AF(gr, genome_assembly = genome_assembly, populations = "AF")
 }
 
+file <- system.file("extdata", "allelic_counts_HG00187.csv", package = "tMAE", mustWork = TRUE)
+maeCounts <- fread(file)                                                                       
+maeRes <- DESeq4MAE(maeCounts)                                                                 
+\dontrun{
+res <- add_gnomAD_AF(maeRes, genome_assembly = genome_assembly, populations = "AF")            
 }
-\author{
-Vicente Yepez
+                                                                                               
 }

@@ -97,7 +97,7 @@ function(
   
   # merge the population scores with the original object
   scores <- as.data.table(gr_scores)[,..populations]
-  res <- cbind(object, scores) %>% as.data.table()
+  res <- as.data.table(cbind(object, scores))
   
   # Compute the MAX_AF based on all provided population columns
   # return -1 if only NAs are present (to avoid a warning)

@@ -32,7 +32,6 @@ Imports:
   GenomicScores,
   ggplot2,
   IRanges,
-  magrittr,
   S4Vectors
 Depends: 
   R (>= 3.6), 
